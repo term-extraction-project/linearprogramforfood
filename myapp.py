@@ -52,7 +52,14 @@ A_eq = [[1 for _ in ingredient_names]]
 b_eq = [1.0]
 
 bounds = [(low/100, high/100) for (low, high) in ingr_ranges]
-f = [-(food[i]["Влага"] + food[i]["Жир"] + food[i]["Белок"]) for i in ingredient_names]
+st.subheader("Что максимизировать?")
+selected_maximize = st.multiselect(
+    "Выберите нутриенты для максимизации:",
+    ["Влага", "Белок", "Жир", "Углеводы", "Кальций", "Фосфор"],
+    default=["Влага", "Белок", "Жир", "Углеводы"]  # по умолчанию все
+)
+
+f = [-sum(food[i][nutr] for nutr in selected_maximize) for i in ingredient_names]
 
 # --- Кнопка запуска оптимизации ---
 if st.button("Рассчитать оптимальный состав"):
