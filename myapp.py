@@ -1,5 +1,3 @@
-pip install scipy
-pip install streamlit
 import streamlit as st
 from scipy.optimize import linprog
 import numpy as np
