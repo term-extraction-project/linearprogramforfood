@@ -3,7 +3,8 @@ from scipy.optimize import linprog
 import pandas as pd
 
 df_ingr_all = pd.read_csv('ingredients.csv')
-
+cols_to_divide = ['Вода', 'Белки', 'Углеводы', 'Жиры всего']
+df_ingr_all[cols_to_divide] = df_ingr_all[cols_to_divide] / 100
 food=df_ingr_all.set_index("Описание")[[ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']].to_dict(orient='index')
 
 st.title("Оптимизация состава рациона")
