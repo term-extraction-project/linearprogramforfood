@@ -4,7 +4,7 @@ import pandas as pd
 
 df_ingr_all = pd.read_csv('ingredients_2.csv')
 cols_to_divide = [ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']
-df_ingr_all[cols_to_divide] = df_ingr_all[cols_to_divide] / 100
+df_ingr_all[cols_to_divide] = df_ingr_all[[ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']] / 100
 df_ingr_all['ингредиент и описание'] = df_ingr_all['Ингредиент'] + ' - ' + df_ingr_all['Описание']
 
 food=df_ingr_all.set_index("ингредиент и описание")[cols_to_divide].to_dict(orient='index')
@@ -45,7 +45,7 @@ bounds = [(low/100, high/100) for (low, high) in ingr_ranges]
 st.subheader("Что максимизировать?")
 selected_maximize = st.multiselect(
     "Выберите нутриенты для максимизации:",
-    cols_to_divide,
+    [ 'Вода', 'Белки', 'Углеводы', 'Жиры всего'],
     default=['Вода', 'Белки', 'Углеводы', 'Жиры всего']  # по умолчанию все
 )
 
