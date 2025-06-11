@@ -4,6 +4,7 @@ import pandas as pd
 
 df_ingr_all = pd.read_csv('ingredients_2.csv')
 cols_to_divide = [ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']
+df[[ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']] = df[[ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']].astype(float)
 df_ingr_all[cols_to_divide] = df_ingr_all[[ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']] / 100
 df_ingr_all['ингредиент и описание'] = df_ingr_all['Ингредиент'] + ' - ' + df_ingr_all['Описание']
 
