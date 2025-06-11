@@ -29,7 +29,7 @@ for ingr in ingredient_names:
 # --- Ограничения по нутриентам ---
 st.subheader("Ограничения по нутриентам:")
 nutr_ranges = {}
-for nutr in [cols_to_divide]:
+for nutr in cols_to_divide:
     nutr_ranges[nutr] = st.slider(f"{nutr}", 0, 100, (0, 100))
 
 # --- Построение задачи линейного программирования ---
@@ -51,7 +51,7 @@ bounds = [(low/100, high/100) for (low, high) in ingr_ranges]
 st.subheader("Что максимизировать?")
 selected_maximize = st.multiselect(
     "Выберите нутриенты для максимизации:",
-    [ 'Вода', 'Белки', 'Углеводы', 'Жиры всего'],
+    ['Вода', 'Белки', 'Углеводы', 'Жиры всего'],
     default=['Вода', 'Белки', 'Углеводы', 'Жиры всего']  # по умолчанию все
 )
 
