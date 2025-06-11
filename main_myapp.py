@@ -2,7 +2,7 @@ import streamlit as st
 from scipy.optimize import linprog
 import pandas as pd
 
-df_ingr_all = pd.read_csv('ingredients.csv')
+df_ingr_all = pd.read_csv('ingredients_2.csv')
 cols_to_divide = [ 'Вода', 'Белки', 'Углеводы',
        'Жиры всего', 'Калории', 'Кальций', 'Медь', 'Железо', 'Магний',
        'Фосфор', 'Калий', 'Натрий', 'Цинк', 'Марганец', 'Витамин A (МЕ)',
