@@ -3,9 +3,20 @@ from scipy.optimize import linprog
 import pandas as pd
 
 df_ingr_all = pd.read_csv('ingredients.csv')
-cols_to_divide = ['Вода', 'Белки', 'Углеводы', 'Жиры всего']
+cols_to_divide = [ 'Вода', 'Белки', 'Углеводы',
+       'Жиры всего', 'Калории', 'Кальций', 'Медь', 'Железо', 'Магний',
+       'Фосфор', 'Калий', 'Натрий', 'Цинк', 'Марганец', 'Витамин A (МЕ)',
+       'Витамин A (RAE)', 'Витамин B12', 'Витамин B6', 'Витамин C',
+       'Витамин E', 'Витамин K', 'Селен', 'Тиамин (B1)', 'Холестерин',
+       'Клетчатка', 'Сахара всего', 'Мононенасыщенные жиры',
+       'Полиненасыщенные жиры', 'Насыщенные жиры', 'Альфа-каротин', 'Зола',
+       'Бета-каротин', 'Бета-криптоксантин', 'Холин', 'Лютеин и зеаксантин',
+       'Ликопин', 'Ниацин (B3)', 'Пантотеновая кислота (B5)',
+       'Ретинол (витамин A)', 'Рибофлавин (B2)']
 df_ingr_all[cols_to_divide] = df_ingr_all[cols_to_divide] / 100
-food=df_ingr_all.set_index("Описание")[[ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']].to_dict(orient='index')
+df_ingr_all['ингредиент и описание'] = df_ingr_all['Ингредиент'] + ' - ' + df_ingr_all['Описание']
+
+food=df_ingr_all.set_index("ингредиент и описание")[cols_to_divide].to_dict(orient='index')
 
 st.title("Оптимизация состава рациона")
 
@@ -21,7 +32,7 @@ for ingr in ingredient_names:
 # --- Ограничения по нутриентам ---
 st.subheader("Ограничения по нутриентам:")
 nutr_ranges = {}
-for nutr in ['Вода', 'Белки', 'Углеводы', 'Жиры всего']:
+for nutr in [cols_to_divide]:
     nutr_ranges[nutr] = st.slider(f"{nutr}", 0, 100, (0, 100))
 
 # --- Построение задачи линейного программирования ---
@@ -43,7 +54,7 @@ bounds = [(low/100, high/100) for (low, high) in ingr_ranges]
 st.subheader("Что максимизировать?")
 selected_maximize = st.multiselect(
     "Выберите нутриенты для максимизации:",
-    ['Вода', 'Белки', 'Углеводы', 'Жиры всего'],
+    cols_to_divide,
     default=['Вода', 'Белки', 'Углеводы', 'Жиры всего']  # по умолчанию все
 )
 
@@ -63,7 +74,7 @@ if st.button("Рассчитать оптимальный состав"):
         st.subheader("Питательная ценность (на 100 г):")
         nutrients = {
             nutr: round(sum(res.x[i] * food[name][nutr] for i, name in enumerate(ingredient_names)) * 100, 2)
-            for nutr in ['Вода', 'Белки', 'Углеводы', 'Жиры всего']
+            for nutr in cols_to_divide
         }
         for k, v in nutrients.items():
             st.write(f"{k}: {v}")
