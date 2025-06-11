@@ -4,7 +4,12 @@ import pandas as pd
 
 df_ingr_all = pd.read_csv('ingredients_2.csv')
 cols_to_divide = [ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']
-df_ingr_all [[ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']] = df_ingr_all [[ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']].astype(float)
+
+for col in cols_to_divide:
+    df_ingr_all[col] = df_ingr_all[col].astype(str).str.replace(',', '.', regex=False)
+    df_ingr_all[col] = pd.to_numeric(df_ingr_all[col], errors='coerce')
+    
+
 df_ingr_all[cols_to_divide] = df_ingr_all[[ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']] / 100
 df_ingr_all['ингредиент и описание'] = df_ingr_all['Ингредиент'] + ' - ' + df_ingr_all['Описание']
 
