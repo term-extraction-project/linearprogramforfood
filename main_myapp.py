@@ -43,7 +43,7 @@ else:
     st.info("Вы пока не выбрали ни одного ингредиента.")
 
 # Пример: доступ к выбранным
-selected_ingredient_names = list(st.session_state.selected_ingredients)
+ingredient_names = list(st.session_state.selected_ingredients)
 
 
 # --- Ограничения по количеству каждого ингредиента ---
