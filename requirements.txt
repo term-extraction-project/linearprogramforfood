@@ -1,3 +1,5 @@
 streamlit
 scipy
 pandas 
+numpy
+itertools
