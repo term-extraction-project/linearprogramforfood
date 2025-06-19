@@ -22,15 +22,15 @@ st.title("🍲 Выбор ингредиентов")
 
 # --- Раскрывающийся выбор: категория > ингредиент > описание ---
 for category in df_ingr_all['Категория'].dropna().unique():
-    with st.expander(f"📂 Категория: {category}"):
+    with st.expander(f"{category}"):
         df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
         for ingredient in df_cat['Ингредиент'].dropna().unique():
-            with st.expander(f"🍖 Ингредиент: {ingredient}"):
+            with st.expander(f"{ingredient}"):
                 df_ing = df_cat[df_cat['Ингредиент'] == ingredient]
                 for desc in df_ing['Описание'].dropna().unique():
                     label = f"{ingredient} — {desc}"
                     key = f"{category}_{ingredient}_{desc}"
-                    if st.button(f"Добавить: {label}", key=key):
+                    if st.button(f"{desc}", key=key):
                         st.session_state.selected_ingredients.add(label)
 
 # --- Показываем выбранные ---
