@@ -6,14 +6,14 @@ import pandas as pd
 
 
 df_ingr_all = pd.read_csv('ingredients_2.csv')
-cols_to_divide = [ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']
+cols_to_divide = [ 'Вода', 'Белки', 'Углеводы', 'Жиры']
 
 for col in cols_to_divide:
     df_ingr_all[col] = df_ingr_all[col].astype(str).str.replace(',', '.', regex=False)
     df_ingr_all[col] = pd.to_numeric(df_ingr_all[col], errors='coerce')
     
 
-df_ingr_all[cols_to_divide] = df_ingr_all[[ 'Вода', 'Белки', 'Углеводы', 'Жиры всего']] / 100
+df_ingr_all[cols_to_divide] = df_ingr_all[[ 'Вода', 'Белки', 'Углеводы', 'Жиры']] / 100
 df_ingr_all['ингредиент и описание'] = df_ingr_all['Ингредиент'] + ' - ' + df_ingr_all['Описание']
 
 food=df_ingr_all.set_index("ингредиент и описание")[cols_to_divide].to_dict(orient='index')
@@ -21,41 +21,43 @@ food=df_ingr_all.set_index("ингредиент и описание")[cols_to_d
 
 st.title("Состав ингредиентов")
 
-# Состояние: выбранный подвид
+# Создаём уникальный ID для выбора (ингредиент + подвид)
+if "selected_ingredient" not in st.session_state:
+    st.session_state.selected_ingredient = None
 if "selected_subtype" not in st.session_state:
     st.session_state.selected_subtype = None
 
 # Категории
 for category in df_ingr_all['Категория'].unique():
-    with st.expander(f"{category}"):
+    with st.expander(f"Категория: {category}"):
         df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
 
         for ingredient in df_cat['Ингредиент'].unique():
-            with st.expander(f"{ingredient}"):
+            with st.expander(f"Ингредиент: {ingredient}"):
                 df_ing = df_cat[df_cat['Ингредиент'] == ingredient]
 
                 for sub in df_ing['Описание'].unique():
-                    # Уникальный ключ по трем полям
-                    btn_key = f"{category}_{ingredient}_{sub}"
-                    if st.button(f"{sub}", key=btn_key):
-                        st.session_state.selected_combo = (ingredient, sub)
+                    key = f"{category}_{ingredient}_{sub}"
+                    if st.button(f"Выбрать: {ingredient} — {sub}", key=key):
+                        st.session_state.selected_ingredient = ingredient
+                        st.session_state.selected_subtype = sub
 
-# Отображение состава
-if st.session_state.selected_combo:
-    selected_ingredient, selected_subtype = st.session_state.selected_combo
-    selected_row = df_ingr_all[
-        (df_ingr_all['Ингредиент'] == selected_ingredient) &
-        (df_ingr_all['Описание'] == selected_subtype)
-    ].iloc[0]
-
-    st.sidebar.subheader(f"Состав: {selected_ingredient} — {selected_subtype}")
-    st.sidebar.write(f"**Белки:** {selected_row['Белки']} г")
-    st.sidebar.write(f"**Жиры:** {selected_row['Жиры всего']} г")
-    st.sidebar.write(f"**Углеводы:** {selected_row['Углеводы']} г")
-    st.sidebar.write(f"**Влага:** {selected_row['Вода']} %")
-else:
+# Проверка и отображение состава
+if st.session_state.selected_ingredient and st.session_state.selected_subtype:
+    filtered = df_ingr_all[
+        (df_ingr_all['Ингредиент'] == st.session_state.selected_ingredient) &
+        (df_ingr_all['Описание'] == st.session_state.selected_subtype)
+    ]
+    
+    if not filtered.empty:
+        row = filtered.iloc[0]
+        st.sidebar.subheader(f"Состав: {st.session_state.selected_ingredient} — {st.session_state.selected_subtype}")
+        st.sidebar.write(f"**Белки:** {row['Белки']} г")
+        st.sidebar.write(f"**Жиры:** {row['Жиры']} г")
+        st.sidebar.write(f"**Углеводы:** {row['Углеводы']} г")
+        st.sidebar.write(f"**Влага:** {row['Вода']} %")
+    else:
         st.sidebar.write("⚠️ Не удалось найти состав.")
-
 
 
 
@@ -95,8 +97,8 @@ bounds = [(low/100, high/100) for (low, high) in ingr_ranges]
 st.subheader("Что максимизировать?")
 selected_maximize = st.multiselect(
     "Выберите нутриенты для максимизации:",
-    ['Вода', 'Белки', 'Углеводы', 'Жиры всего'],
-    default=['Вода', 'Белки', 'Углеводы', 'Жиры всего']  # по умолчанию все
+    ['Вода', 'Белки', 'Углеводы', 'Жиры'],
+    default=['Вода', 'Белки', 'Углеводы', 'Жиры']  # по умолчанию все
 )
 
 f = [-sum(food[i][nutr] for nutr in selected_maximize) for i in ingredient_names]
