@@ -42,10 +42,7 @@ for category in df_ingr_all['Категория'].unique():
                         st.session_state.selected_ingredient = ingredient
                         st.session_state.selected_subtype = sub
 
-st.sidebar.write("Белки:", row['Белки'])
-st.sidebar.write("Жиры:", row['Жиры'])
-st.sidebar.write("Углеводы:", row['Углеводы'])
-st.sidebar.write("Вода:", row['Вода'])
+
 
 nutr_data = {
     'Нутриент': ['Белки', 'Жиры', 'Углеводы', 'Влага'],
@@ -56,6 +53,12 @@ nutr_data = {
         row['Вода'] * 100
     ]
 }
+
+st.sidebar.write("Белки:", row['Белки'])
+st.sidebar.write("Жиры:", row['Жиры'])
+st.sidebar.write("Углеводы:", row['Углеводы'])
+st.sidebar.write("Вода:", row['Вода'])
+
 nutr_df = pd.DataFrame(nutr_data)
 st.sidebar.markdown("#### Химический состав:")
 st.sidebar.dataframe(nutr_df.style.format({"На 100 г": "{:.1f} г"}))
