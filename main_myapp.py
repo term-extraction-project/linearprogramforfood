@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 from scipy.optimize import linprog  # ← ОБЯЗАТЕЛЬНО
+import numpy as np
+import itertools
 
 
 # --- Загрузка данных ---
@@ -108,5 +110,58 @@ if ingredient_names:
                 st.write(f"**{k}:** {v} г")
         else:
             st.error("❌ Не удалось найти оптимальное решение. Попробуйте другие параметры.")
+
+
+            step = 1  # шаг в процентах
+            variants = []
+            ranges = [np.arange(low, high + step, step) for (low, high) in ingr_ranges]
+
+            # Генерация всех комбинаций, которые дают в сумме 100 г
+            for combo in itertools.product(*ranges):
+                if abs(sum(combo) - 100) < 1e-6:
+                    variants.append(combo)
+
+            best_recipe = None
+            min_penalty = float("inf")
+
+            for combo in variants:
+                values = dict(zip(ingredient_names, combo))
+
+                totals = {nutr: 0.0 for nutr in cols_to_divide}
+                for i, ingr in enumerate(ingredient_names):
+                    for nutr in cols_to_divide:
+                        totals[nutr] += values[ingr] * food[ingr][nutr]
+
+                # Штраф за отклонения от допустимых диапазонов
+                penalty = 0
+                for nutr in cols_to_divide:
+                    val = totals[nutr]
+                    min_val = nutr_ranges[nutr][0]
+                    max_val = nutr_ranges[nutr][1]
+
+                    if val < min_val:
+                        penalty += min_val - val
+                    elif val > max_val:
+                        penalty += val - max_val
+
+                if penalty < min_penalty:
+                    min_penalty = penalty
+                    best_recipe = (values, totals)
+
+            if best_recipe:
+                values, totals = best_recipe
+                st.success("⚙️ Найден состав вручную (перебором):")
+
+                st.markdown("### 📦 Состав (в граммах на 100 г):")
+                for name, val in values.items():
+                    st.write(f"{name}: **{round(val, 2)} г**")
+
+                st.markdown("### 💪 Питательная ценность на 100 г:")
+                for nutr in cols_to_divide:
+                    st.write(f"**{nutr}:** {round(totals[nutr], 2)} г")
+            else:
+                st.error("🚫 Не удалось найти подходящий состав даже вручную.")
+
 else:
     st.info("👈 Пожалуйста, выберите хотя бы один ингредиент.")
+    
