@@ -37,7 +37,7 @@ for category in df_ingr_all['Категория'].unique():
                 for sub in df_ing['Описание'].unique():
                     # Уникальный ключ по трем полям
                     btn_key = f"{category}_{ingredient}_{sub}"
-                    if st.button(f"{ingredient} — {sub}", key=btn_key):
+                    if st.button(f"{sub}", key=btn_key):
                         st.session_state.selected_combo = (ingredient, sub)
 
 # Отображение состава
