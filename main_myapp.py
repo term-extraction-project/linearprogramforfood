@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+from scipy.optimize import linprog  # ← ОБЯЗАТЕЛЬНО
+
 
 # --- Загрузка данных ---
 df_ingr_all = pd.read_csv('ingredients_2.csv')
