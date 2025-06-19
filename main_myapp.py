@@ -20,6 +20,29 @@ food=df_ingr_all.set_index("ингредиент и описание")[cols_to_d
 
 
 st.title("Состав ингредиентов")
+
+# Создаём уникальный ID для выбора (ингредиент + подвид)
+if "selected_ingredient" not in st.session_state:
+    st.session_state.selected_ingredient = None
+if "selected_subtype" not in st.session_state:
+    st.session_state.selected_subtype = None
+
+# Категории
+for category in df_ingr_all['Категория'].unique():
+    with st.expander(f"Категория: {category}"):
+        df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
+
+        for ingredient in df_cat['Ингредиент'].unique():
+            with st.expander(f"Ингредиент: {ingredient}"):
+                df_ing = df_cat[df_cat['Ингредиент'] == ingredient]
+
+                for sub in df_ing['Описание'].unique():
+                    key = f"{category}_{ingredient}_{sub}"
+                    if st.button(f"Выбрать: {ingredient} — {sub}", key=key):
+                        st.session_state.selected_ingredient = ingredient
+                        st.session_state.selected_subtype = sub
+
+
 # Отображение состава ингредиента
 if st.session_state.get("selected_ingredient") and st.session_state.get("selected_subtype"):
     selected_ing = str(st.session_state.selected_ingredient).strip()
