@@ -59,23 +59,26 @@ if st.session_state.get("selected_ingredient") and st.session_state.get("selecte
         st.sidebar.markdown(f"### 🥣 **{row['Ингредиент']}**")
         st.sidebar.markdown(f"_Категория: {row['Категория']}_")
         st.sidebar.markdown(f"_Описание: {row['Описание']}_")
-    
-        # Минимальная таблица
+
+        
+        # Химический состав
         df_nutr = pd.DataFrame({
             "Нутриент": ["Белки", "Жиры", "Углеводы", "Влага"],
             "На 100 г": [
-                round(row["Белки"] * 100, 4) if pd.notnull(row["Белки"]) else None,
-                round(row["Жиры"] * 100, 3) if pd.notnull(row["Жиры"]) else None,
-                round(row["Углеводы"] * 100, 0) if pd.notnull(row["Углеводы"]) else None,
-                round(row["Вода"] * 100, 0) if pd.notnull(row["Вода"]) else None,
+                row["Белки"] * 100 if pd.notnull(row["Белки"]) else None,
+                row["Жиры"] * 100 if pd.notnull(row["Жиры"]) else None,
+                row["Углеводы"] * 100 if pd.notnull(row["Углеводы"]) else None,
+                row["Вода"] * 100 if pd.notnull(row["Вода"]) else None,
             ]
         })
-    
+        
+        # Удалим индекс (нумерацию) и округлим значения
+        df_nutr.index = [''] * len(df_nutr)  # скрыть номера строк
+        df_nutr["На 100 г"] = df_nutr["На 100 г"].round(1)  # округление до 1 знака
+        
+        # Отображение
         st.sidebar.markdown("#### Химический состав:")
-        st.markdown("### 🧾 Химический состав выбранного ингредиента")
-        st.table(df_nutr)
-
-
+        st.sidebar.table(df_nutr)
 
 
 st.title("Оптимизация состава рациона")
