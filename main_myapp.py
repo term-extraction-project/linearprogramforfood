@@ -53,7 +53,6 @@ if st.session_state.get("selected_ingredient") and st.session_state.get("selecte
         (df_ingr_all['Описание'].astype(str).str.strip() == selected_desc)
     ]
 
-    st.write("DEBUG – найдено строк:", filtered.shape[0])  # временно
     if not filtered.empty:
         row = filtered.iloc[0]
     
