@@ -1,8 +1,7 @@
 import streamlit as st
-from scipy.optimize import linprog
 import pandas as pd
 
-# --- Загрузка и предобработка данных ---
+# --- Загрузка данных ---
 df_ingr_all = pd.read_csv('ingredients_2.csv')
 cols_to_divide = ['Вода', 'Белки', 'Углеводы', 'Жиры']
 
@@ -13,38 +12,39 @@ for col in cols_to_divide:
 df_ingr_all[cols_to_divide] = df_ingr_all[cols_to_divide] / 100
 df_ingr_all['ингредиент и описание'] = df_ingr_all['Ингредиент'] + ' — ' + df_ingr_all['Описание']
 
-# --- Словарь: название → нутриенты ---
-food = df_ingr_all.set_index("ингредиент и описание")[cols_to_divide].to_dict(orient='index')
+# --- Инициализация состояния ---
+if "selected_ingredients" not in st.session_state:
+    st.session_state.selected_ingredients = set()
 
-st.title("🥣 Оптимизация состава корма")
+st.title("🍲 Выбор ингредиентов")
 
-# --- Выбор ингредиентов из выпадающего списка ---
-ingredient_options = df_ingr_all["ингредиент и описание"].dropna().unique().tolist()
-ingredient_names = st.multiselect(
-    "Выберите ингредиенты (можно несколько):",
-    options=ingredient_options,
-    placeholder="Нажмите для выбора...",
-)
+# --- Раскрывающийся выбор: категория > ингредиент > описание ---
+for category in df_ingr_all['Категория'].dropna().unique():
+    with st.expander(f"📂 Категория: {category}"):
+        df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
+        for ingredient in df_cat['Ингредиент'].dropna().unique():
+            with st.expander(f"🍖 Ингредиент: {ingredient}"):
+                df_ing = df_cat[df_cat['Ингредиент'] == ingredient]
+                for desc in df_ing['Описание'].dropna().unique():
+                    label = f"{ingredient} — {desc}"
+                    key = f"{category}_{ingredient}_{desc}"
+                    if st.button(f"Добавить: {label}", key=key):
+                        st.session_state.selected_ingredients.add(label)
 
-# --- Показ химического состава для выбранного ингредиента (если выбран 1) ---
-if len(ingredient_names) == 1:
-    row = df_ingr_all[df_ingr_all['ингредиент и описание'] == ingredient_names[0]].iloc[0]
-    st.sidebar.markdown(f"### 🧾 Состав: **{row['Ингредиент']}**")
-    st.sidebar.markdown(f"_Категория: {row['Категория']}_")
-    st.sidebar.markdown(f"_Описание: {row['Описание']}_")
+# --- Показываем выбранные ---
+st.markdown("### ✅ Выбранные ингредиенты:")
+if st.session_state.selected_ingredients:
+    for i in sorted(st.session_state.selected_ingredients):
+        col1, col2 = st.columns([5, 1])
+        col1.write(i)
+        if col2.button("❌", key=f"remove_{i}"):
+            st.session_state.selected_ingredients.remove(i)
+else:
+    st.info("Вы пока не выбрали ни одного ингредиента.")
 
-    df_nutr = pd.DataFrame({
-        "Нутриент": ["Белки", "Жиры", "Углеводы", "Влага"],
-        "На 100 г": [
-            round(row["Белки"] * 100, 1) if pd.notnull(row["Белки"]) else None,
-            round(row["Жиры"] * 100, 1) if pd.notnull(row["Жиры"]) else None,
-            round(row["Углеводы"] * 100, 1) if pd.notnull(row["Углеводы"]) else None,
-            round(row["Вода"] * 100, 1) if pd.notnull(row["Вода"]) else None,
-        ]
-    })
-    df_nutr.index = [''] * len(df_nutr)
-    st.sidebar.markdown("#### Химический состав:")
-    st.sidebar.table(df_nutr)
+# Пример: доступ к выбранным
+selected_ingredient_names = list(st.session_state.selected_ingredients)
+
 
 # --- Ограничения по количеству каждого ингредиента ---
 if ingredient_names:
