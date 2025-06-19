@@ -25,28 +25,30 @@ st.title("Состав ингредиентов")
 if "selected_subtype" not in st.session_state:
     st.session_state.selected_subtype = None
 
-# Уникальные категории
-categories = df_ingr_all['Категория'].unique()
-
-for category in categories:
+# Категории
+for category in df_ingr_all['Категория'].unique():
     with st.expander(f"{category}"):
         df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
-        ingredients = df_cat['Ингредиент'].unique()
 
-        for ing in ingredients:
-            with st.expander(f"{ing}", expanded=False):
-                df_ing = df_cat[df_cat['Ингредиент'] == ing]
-                subtypes = df_ing['Описание'].unique()
+        for ingredient in df_cat['Ингредиент'].unique():
+            with st.expander(f"{ingredient}"):
+                df_ing = df_cat[df_cat['Ингредиент'] == ingredient]
 
-                for sub in subtypes:
-                    if st.button(f"{sub}", key=f"{category}_{ing}_{sub}"):
-                        st.session_state.selected_subtype = sub
+                for sub in df_ing['Описание'].unique():
+                    # Уникальный ключ по трем полям
+                    btn_key = f"{category}_{ingredient}_{sub}"
+                    if st.button(f"{ingredient} — {sub}", key=btn_key):
+                        st.session_state.selected_combo = (ingredient, sub)
 
 # Отображение состава
-if st.session_state.selected_subtype:
-    selected_row = df_ingr_all[df_ingr_all['Описание'] == st.session_state.selected_subtype].iloc[0]
+if st.session_state.selected_combo:
+    selected_ingredient, selected_subtype = st.session_state.selected_combo
+    selected_row = df_ingr_all[
+        (df_ingr_all['Ингредиент'] == selected_ingredient) &
+        (df_ingr_all['Описание'] == selected_subtype)
+    ].iloc[0]
 
-    st.sidebar.subheader(f"Химический состав: {st.session_state.selected_subtype}")
+    st.sidebar.subheader(f"Состав: {selected_ingredient} — {selected_subtype}")
     st.sidebar.write(f"**Белки:** {selected_row['Белки']} г")
     st.sidebar.write(f"**Жиры:** {selected_row['Жиры всего']} г")
     st.sidebar.write(f"**Углеводы:** {selected_row['Углеводы']} г")
