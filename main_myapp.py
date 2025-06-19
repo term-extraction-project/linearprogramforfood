@@ -77,8 +77,9 @@ if st.session_state.get("selected_ingredient") and st.session_state.get("selecte
         df_nutr["На 100 г"] = df_nutr["На 100 г"].round(1)  # округление до 1 знака
         
         # Отображение
-        st.sidebar.markdown("#### Химический состав:")
-        st.sidebar.table(df_nutr)
+        st.markdown("### 🧾 Химический состав выбранного ингредиента")
+        st.table(df_nutr)
+
 
 
 st.title("Оптимизация состава рациона")
