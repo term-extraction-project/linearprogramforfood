@@ -29,16 +29,16 @@ if "selected_subtype" not in st.session_state:
 
 # Категории
 for category in df_ingr_all['Категория'].unique():
-    with st.expander(f"Категория: {category}"):
+    with st.expander(f"{category}"):
         df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
 
         for ingredient in df_cat['Ингредиент'].unique():
-            with st.expander(f"Ингредиент: {ingredient}"):
+            with st.expander(f"{ingredient}"):
                 df_ing = df_cat[df_cat['Ингредиент'] == ingredient]
 
                 for sub in df_ing['Описание'].unique():
                     key = f"{category}_{ingredient}_{sub}"
-                    if st.button(f"Выбрать: {ingredient} — {sub}", key=key):
+                    if st.button(f"{sub}", key=key):
                         st.session_state.selected_ingredient = ingredient
                         st.session_state.selected_subtype = sub
 
@@ -64,8 +64,8 @@ if st.session_state.get("selected_ingredient") and st.session_state.get("selecte
         df_nutr = pd.DataFrame({
             "Нутриент": ["Белки", "Жиры", "Углеводы", "Влага"],
             "На 100 г": [
-                round(row["Белки"] * 100, 0) if pd.notnull(row["Белки"]) else None,
-                round(row["Жиры"] * 100, 0) if pd.notnull(row["Жиры"]) else None,
+                round(row["Белки"] * 100, 4) if pd.notnull(row["Белки"]) else None,
+                round(row["Жиры"] * 100, 3) if pd.notnull(row["Жиры"]) else None,
                 round(row["Углеводы"] * 100, 0) if pd.notnull(row["Углеводы"]) else None,
                 round(row["Вода"] * 100, 0) if pd.notnull(row["Вода"]) else None,
             ]
