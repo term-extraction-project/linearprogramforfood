@@ -43,6 +43,19 @@ for category in df_ingr_all['Категория'].unique():
                         st.session_state.selected_subtype = sub
 
 
+if not filtered.empty:
+    row = filtered.iloc[0]
+
+    # DEBUG-печать перед таблицей
+    st.sidebar.write("Белки:", row['Белки'])
+    st.sidebar.write("Жиры:", row['Жиры'])
+    st.sidebar.write("Углеводы:", row['Углеводы'])
+    st.sidebar.write("Вода:", row['Вода'])
+
+    # таблица и остальное
+    ...
+else:
+    st.sidebar.warning("⚠️ Не удалось найти состав.")
 
 
 st.sidebar.write("Белки:", row['Белки'])
