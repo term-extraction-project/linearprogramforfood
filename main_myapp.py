@@ -54,6 +54,26 @@ if st.session_state.get("selected_ingredient") and st.session_state.get("selecte
     ]
 
     st.write("DEBUG – найдено строк:", filtered.shape[0])  # временно
+if not filtered.empty:
+    row = filtered.iloc[0]
+
+    st.sidebar.markdown(f"### 🥣 **{row['Ингредиент']}**")
+    st.sidebar.markdown(f"_Категория: {row['Категория']}_")
+    st.sidebar.markdown(f"_Описание: {row['Описание']}_")
+
+    # Минимальная таблица
+    df_nutr = pd.DataFrame({
+        "Нутриент": ["Белки", "Жиры", "Углеводы", "Влага"],
+        "На 100 г": [
+            round(row["Белки"] * 100, 1) if pd.notnull(row["Белки"]) else None,
+            round(row["Жиры"] * 100, 1) if pd.notnull(row["Жиры"]) else None,
+            round(row["Углеводы"] * 100, 1) if pd.notnull(row["Углеводы"]) else None,
+            round(row["Вода"] * 100, 1) if pd.notnull(row["Вода"]) else None,
+        ]
+    })
+
+    st.sidebar.markdown("#### Химический состав:")
+    st.sidebar.dataframe(df_nutr, use_container_width=True)
 
     if not filtered.empty:
         row = filtered.iloc[0]
