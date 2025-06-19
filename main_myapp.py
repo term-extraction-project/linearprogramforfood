@@ -43,23 +43,24 @@ for category in df_ingr_all['Категория'].unique():
                         st.session_state.selected_subtype = sub
 
 # Проверка и отображение состава
+# Фильтрация и отображение состава
 if st.session_state.selected_ingredient and st.session_state.selected_subtype:
     filtered = df_ingr_all[
-        (df_ingr_all['Ингредиент'] == st.session_state.selected_ingredient) &
-        (df_ingr_all['Описание'] == st.session_state.selected_subtype)
+        (df_ingr_all['Ингредиент'].astype(str).str.strip() == str(st.session_state.selected_ingredient).strip()) &
+        (df_ingr_all['Описание'].astype(str).str.strip() == str(st.session_state.selected_subtype).strip())
     ]
-    
+
+    st.write("DEBUG: Найденные строки:", filtered)  # для проверки
+
     if not filtered.empty:
         row = filtered.iloc[0]
         st.sidebar.subheader(f"Состав: {st.session_state.selected_ingredient} — {st.session_state.selected_subtype}")
-        st.sidebar.write(f"**Белки:** {row['Белки']} г")
-        st.sidebar.write(f"**Жиры:** {row['Жиры']} г")
-        st.sidebar.write(f"**Углеводы:** {row['Углеводы']} г")
-        st.sidebar.write(f"**Влага:** {row['Вода']} %")
+        st.sidebar.write(f"**Белки:** {row['Белки'] * 100:.1f} г")
+        st.sidebar.write(f"**Жиры:** {row['Жиры'] * 100:.1f} г")
+        st.sidebar.write(f"**Углеводы:** {row['Углеводы'] * 100:.1f} г")
+        st.sidebar.write(f"**Влага:** {row['Вода'] * 100:.1f} %")
     else:
-        st.sidebar.write("⚠️ Не удалось найти состав.")
-
-
+        st.sidebar.warning("⚠️ Не удалось найти состав.")
 
 st.title("Оптимизация состава рациона")
 
