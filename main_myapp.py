@@ -20,69 +20,8 @@ food=df_ingr_all.set_index("ингредиент и описание")[cols_to_d
 
 
 st.title("Состав ингредиентов")
-
-# Создаём уникальный ID для выбора (ингредиент + подвид)
-if "selected_ingredient" not in st.session_state:
-    st.session_state.selected_ingredient = None
-if "selected_subtype" not in st.session_state:
-    st.session_state.selected_subtype = None
-
-# Категории
-for category in df_ingr_all['Категория'].unique():
-    with st.expander(f"Категория: {category}"):
-        df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
-
-        for ingredient in df_cat['Ингредиент'].unique():
-            with st.expander(f"Ингредиент: {ingredient}"):
-                df_ing = df_cat[df_cat['Ингредиент'] == ingredient]
-
-                for sub in df_ing['Описание'].unique():
-                    key = f"{category}_{ingredient}_{sub}"
-                    if st.button(f"Выбрать: {ingredient} — {sub}", key=key):
-                        st.session_state.selected_ingredient = ingredient
-                        st.session_state.selected_subtype = sub
-
-
-if not filtered.empty:
-    row = filtered.iloc[0]
-
-    # DEBUG-печать перед таблицей
-    st.sidebar.write("Белки:", row['Белки'])
-    st.sidebar.write("Жиры:", row['Жиры'])
-    st.sidebar.write("Углеводы:", row['Углеводы'])
-    st.sidebar.write("Вода:", row['Вода'])
-
-    # таблица и остальное
-    ...
-else:
-    st.sidebar.warning("⚠️ Не удалось найти состав.")
-
-
-st.sidebar.write("Белки:", row['Белки'])
-st.sidebar.write("Жиры:", row['Жиры'])
-st.sidebar.write("Углеводы:", row['Углеводы'])
-st.sidebar.write("Вода:", row['Вода'])
-
-nutr_data = {
-    'Нутриент': ['Белки', 'Жиры', 'Углеводы', 'Влага'],
-    'На 100 г': [
-        row['Белки'] * 100,
-        row['Жиры'] * 100,
-        row['Углеводы'] * 100,
-        row['Вода'] * 100
-    ]
-}
-
-
-nutr_df = pd.DataFrame(nutr_data)
-st.sidebar.markdown("#### Химический состав:")
-st.sidebar.dataframe(nutr_df.style.format({"На 100 г": "{:.1f} г"}))
-
-# ✅ Проверка и отображение состава
-
-
-if st.session_state.selected_ingredient and st.session_state.selected_subtype:
-    # Явное приведение к строке и удаление пробелов (иногда бывают лишние)
+# Отображение состава ингредиента
+if st.session_state.get("selected_ingredient") and st.session_state.get("selected_subtype"):
     selected_ing = str(st.session_state.selected_ingredient).strip()
     selected_desc = str(st.session_state.selected_subtype).strip()
 
@@ -91,24 +30,24 @@ if st.session_state.selected_ingredient and st.session_state.selected_subtype:
         (df_ingr_all['Описание'].astype(str).str.strip() == selected_desc)
     ]
 
-    st.write("DEBUG – найдено строк:", filtered.shape[0])  # ⬅️ временно покажем, что найдено
+    st.write("DEBUG – найдено строк:", filtered.shape[0])  # временно
 
     if not filtered.empty:
         row = filtered.iloc[0]
 
-        # Заголовок
+        # Отображение в сайдбаре
         st.sidebar.markdown(f"### 🥣 **{row['Ингредиент']}**")
         st.sidebar.markdown(f"_Категория: {row['Категория']}_")
         st.sidebar.markdown(f"_Описание: {row['Описание']}_")
 
-        # Таблица с составом
+        # Создание таблицы
         nutr_data = {
             'Нутриент': ['Белки', 'Жиры', 'Углеводы', 'Влага'],
             'На 100 г': [
-                f"{row['Белки'] * 100:.1f} г" if pd.notnull(row['Белки']) else "н/д",
-                f"{row['Жиры'] * 100:.1f} г" if pd.notnull(row['Жиры']) else "н/д",
-                f"{row['Углеводы'] * 100:.1f} г" if pd.notnull(row['Углеводы']) else "н/д",
-                f"{row['Вода'] * 100:.1f} г" if pd.notnull(row['Вода']) else "н/д"
+                row['Белки'] * 100 if pd.notnull(row['Белки']) else 0,
+                row['Жиры'] * 100 if pd.notnull(row['Жиры']) else 0,
+                row['Углеводы'] * 100 if pd.notnull(row['Углеводы']) else 0,
+                row['Вода'] * 100 if pd.notnull(row['Вода']) else 0,
             ]
         }
 
@@ -116,7 +55,7 @@ if st.session_state.selected_ingredient and st.session_state.selected_subtype:
         st.sidebar.markdown("#### Химический состав:")
         st.sidebar.table(nutr_df)
     else:
-        st.sidebar.warning("⚠️ Не удалось найти состав.")
+        st.sidebar.warning("⚠️ Ингредиент не найден — возможно, описание изменилось.")
 
 
 
