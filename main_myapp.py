@@ -64,10 +64,10 @@ if st.session_state.get("selected_ingredient") and st.session_state.get("selecte
         df_nutr = pd.DataFrame({
             "Нутриент": ["Белки", "Жиры", "Углеводы", "Влага"],
             "На 100 г": [
-                round(row["Белки"] * 100, 1) if pd.notnull(row["Белки"]) else None,
-                round(row["Жиры"] * 100, 1) if pd.notnull(row["Жиры"]) else None,
-                round(row["Углеводы"] * 100, 1) if pd.notnull(row["Углеводы"]) else None,
-                round(row["Вода"] * 100, 1) if pd.notnull(row["Вода"]) else None,
+                round(row["Белки"] * 100, 0) if pd.notnull(row["Белки"]) else None,
+                round(row["Жиры"] * 100, 0) if pd.notnull(row["Жиры"]) else None,
+                round(row["Углеводы"] * 100, 0) if pd.notnull(row["Углеводы"]) else None,
+                round(row["Вода"] * 100, 0) if pd.notnull(row["Вода"]) else None,
             ]
         })
     
