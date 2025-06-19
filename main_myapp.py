@@ -73,7 +73,9 @@ if st.session_state.get("selected_ingredient") and st.session_state.get("selecte
         })
     
         st.sidebar.markdown("#### Химический состав:")
-        st.sidebar.dataframe(df_nutr, use_container_width=True)
+        st.markdown("### 🧾 Химический состав выбранного ингредиента")
+        st.table(df_nutr)
+
 
 
 
