@@ -25,13 +25,13 @@ categories = df_ingr_all['Категория'].unique()
 st.title("Многоуровневый выбор ингредиентов")
 
 for category in categories:
-    with st.expander(f"Категория: {category}"):
+    with st.expander(f"{category}"):
         # Фильтруем по категории
         df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
         ingredients = df_cat['Ингредиент'].unique()
 
         for ing in ingredients:
-            with st.expander(f"Ингредиент: {ing}", expanded=False):
+            with st.expander(f"{ing}", expanded=False):
                 # Фильтруем по ингредиенту
                 subtypes = df_cat[df_cat['Ингредиент'] == ing]['Описание'].unique()
                 for sub in subtypes:
