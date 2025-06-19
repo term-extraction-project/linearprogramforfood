@@ -3,33 +3,6 @@ from scipy.optimize import linprog
 import pandas as pd
 
 
-# Пример DataFrame
-data = {
-    'Категория': ['Мясо', 'Мясо', 'Овощи', 'Овощи', 'Овощи'],
-    'Ингредиент': ['Курица', 'Говядина', 'Морковь', 'Картофель', 'Картофель'],
-    'Подвид': ['Филе', 'Рагу', 'Тертая', 'Печеная', 'Жареная']
-}
-
-df = pd.DataFrame(data)
-
-# Получаем уникальные категории
-categories = df['Категория'].unique()
-
-st.title("Многоуровневый выбор ингредиентов")
-
-for category in categories:
-    with st.expander(f"Категория: {category}"):
-        # Фильтруем по категории
-        df_cat = df[df['Категория'] == category]
-        ingredients = df_cat['Ингредиент'].unique()
-
-        for ing in ingredients:
-            with st.expander(f"Ингредиент: {ing}", expanded=False):
-                # Фильтруем по ингредиенту
-                subtypes = df_cat[df_cat['Ингредиент'] == ing]['Подвид'].unique()
-                for sub in subtypes:
-                    st.markdown(f"- {sub}")
-
 
 
 df_ingr_all = pd.read_csv('ingredients_2.csv')
@@ -44,6 +17,30 @@ df_ingr_all[cols_to_divide] = df_ingr_all[[ 'Вода', 'Белки', 'Угле�
 df_ingr_all['ингредиент и описание'] = df_ingr_all['Ингредиент'] + ' - ' + df_ingr_all['Описание']
 
 food=df_ingr_all.set_index("ингредиент и описание")[cols_to_divide].to_dict(orient='index')
+
+
+# Получаем уникальные категории
+categories = df_ingr_all['Категория'].unique()
+
+st.title("Многоуровневый выбор ингредиентов")
+
+for category in categories:
+    with st.expander(f"Категория: {category}"):
+        # Фильтруем по категории
+        df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
+        ingredients = df_cat['Ингредиент'].unique()
+
+        for ing in ingredients:
+            with st.expander(f"Ингредиент: {ing}", expanded=False):
+                # Фильтруем по ингредиенту
+                subtypes = df_cat[df_cat['Ингредиент'] == ing]['Описание'].unique()
+                for sub in subtypes:
+                    st.markdown(f"- {sub}")
+
+
+
+
+
 
 st.title("Оптимизация состава рациона")
 
