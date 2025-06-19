@@ -29,22 +29,22 @@ if "selected_subtype" not in st.session_state:
 categories = df_ingr_all['Категория'].unique()
 
 for category in categories:
-    with st.expander(f"Категория: {category}"):
+    with st.expander(f"{category}"):
         df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
         ingredients = df_cat['Ингредиент'].unique()
 
         for ing in ingredients:
-            with st.expander(f"Ингредиент: {ing}", expanded=False):
+            with st.expander(f"{ing}", expanded=False):
                 df_ing = df_cat[df_cat['Ингредиент'] == ing]
                 subtypes = df_ing['Описание'].unique()
 
                 for sub in subtypes:
-                    if st.button(f"Выбрать подвид: {sub}", key=f"{category}_{ing}_{sub}"):
+                    if st.button(f"{sub}", key=f"{category}_{ing}_{sub}"):
                         st.session_state.selected_subtype = sub
 
 # Отображение состава
 if st.session_state.selected_subtype:
-    selected_row = df[df['Подвид'] == st.session_state.selected_subtype].iloc[0]
+    selected_row = df_ingr_all[df_ingr_all['Описание'] == st.session_state.selected_subtype].iloc[0]
 
     st.sidebar.subheader(f"Химический состав: {st.session_state.selected_subtype}")
     st.sidebar.write(f"**Белки:** {selected_row['Белки']} г")
