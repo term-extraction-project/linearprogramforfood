@@ -53,7 +53,8 @@ if st.session_state.selected_combo:
     st.sidebar.write(f"**Жиры:** {selected_row['Жиры всего']} г")
     st.sidebar.write(f"**Углеводы:** {selected_row['Углеводы']} г")
     st.sidebar.write(f"**Влага:** {selected_row['Вода']} %")
-
+else:
+        st.sidebar.write("⚠️ Не удалось найти состав.")
 
 
 
