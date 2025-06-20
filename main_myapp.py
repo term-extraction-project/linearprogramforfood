@@ -22,53 +22,38 @@ if "selected_ingredients" not in st.session_state:
     st.session_state.selected_ingredients = set()
 
 st.title("🍲 Выбор ингредиентов")
-
-# --- Пример CSS для стилизации ---
+# Стили: только для кнопок и текста
 st.markdown("""
-    <style>
-    /* Убираем отступы между блоками */
-    .block-container {
-        padding-top: 0rem;
-        padding-bottom: 0rem;
-    }
-    /* Категория: яркий фон */
-    div[data-testid="stExpander"] > div:first-child {
-        background-color: #007BFF;  /* Ярко-синий */
-        color: white;
-        border-radius: 6px;
-        margin-bottom: 0px;
-    }
-    /* Ингредиенты: серый фон */
-    div[data-testid="stExpander"] > div:nth-child(2) > div > div > div[data-testid="stExpander"] > div:first-child {
-        background-color: #CCCCCC;  /* Светло-серый */
-        color: black;
-    }
-    /* Кнопки описаний: белые, прямоугольные */
-    button[kind="secondary"] {
-        background-color: white !important;
-        color: black !important;
-        border-radius: 0px !important;
-        border: 1px solid #ccc !important;
-        margin: 2px 0px;
-    }
-    </style>
+<style>
+.big-expander > div:first-child {
+    background-color: #007BFF !important;
+    color: white !important;
+    font-weight: bold;
+    border-radius: 6px;
+}
+.white-button {
+    background-color: white;
+    color: black;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 2px 4px;
+}
+</style>
 """, unsafe_allow_html=True)
-
-# --- Логика выбора ---
-if "selected_ingredients" not in st.session_state:
-    st.session_state.selected_ingredients = set()
-
 for category in df_ingr_all['Категория'].dropna().unique():
-    with st.expander(f"{category}"):
+    with st.expander(category, expanded=False):
         df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
         for ingredient in df_cat['Ингредиент'].dropna().unique():
-            with st.expander(f"{ingredient}"):
-                df_ing = df_cat[df_cat['Ингредиент'] == ingredient]
-                for desc in df_ing['Описание'].dropna().unique():
-                    label = f"{ingredient} — {desc}"
-                    key = f"{category}_{ingredient}_{desc}"
-                    if st.button(f"{desc}", key=key):
-                        st.session_state.selected_ingredients.add(label)
+            df_ing = df_cat[df_cat['Ингредиент'] == ingredient]
+            for desc in df_ing['Описание'].dropna().unique():
+                label = f"{ingredient} — {desc}"
+                key = f"{category}_{ingredient}_{desc}"
+                button_html = f"""<div class='white-button'>{label}</div>"""
+                if st.button(label, key=key):
+                    st.session_state.selected_ingredients.add(label)
+
 
 # --- Показываем выбранные ---
 st.markdown("### ✅ Выбранные ингредиенты:")
