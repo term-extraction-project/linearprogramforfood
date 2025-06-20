@@ -22,57 +22,17 @@ if "selected_ingredients" not in st.session_state:
     st.session_state.selected_ingredients = set()
 
 st.title("🍲 Выбор ингредиентов")
-# --- Стилизация ---
-st.markdown("""
-<style>
-.category {
-    background-color: #007BFF;
-    color: white;
-    padding: 8px;
-    font-weight: bold;
-    border-radius: 6px;
-    margin-top: 10px;
-}
-.ingredient {
-    background-color: #E0E0E0;
-    color: black;
-    padding: 6px;
-    margin-left: 10px;
-    border-radius: 4px;
-    margin-top: 4px;
-}
-.desc-button {
-    background-color: white;
-    color: black;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 4px 8px;
-    display: inline-block;
-    margin: 2px 6px;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# --- Инициализация состояния ---
-if "selected_ingredients" not in st.session_state:
-    st.session_state.selected_ingredients = set()
-
-# --- Иерархия ---
-for category in df['Категория'].unique():
-    st.markdown(f"<div class='category'>{category}</div>", unsafe_allow_html=True)
-    df_cat = df[df['Категория'] == category]
-    
-    for ingredient in df_cat['Ингредиент'].unique():
-        st.markdown(f"<div class='ingredient'>{ingredient}</div>", unsafe_allow_html=True)
-        df_ing = df_cat[df_cat['Ингредиент'] == ingredient]
-        
-        cols = st.columns(len(df_ing))
-        for i, desc in enumerate(df_ing['Описание']):
-            label = f"{ingredient} — {desc}"
-            key = f"{category}_{ingredient}_{desc}"
-            with cols[i]:
-                if st.button(desc, key=key):
-                    st.session_state.selected_ingredients.add(label)
+for category in df_ingr_all['Категория'].dropna().unique():
+    with st.expander(f"{category}"):
+        df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
+        for ingredient in df_cat['Ингредиент'].dropna().unique():
+            with st.expander(f"{ingredient}"):
+                df_ing = df_cat[df_cat['Ингредиент'] == ingredient]
+                for desc in df_ing['Описание'].dropna().unique():
+                    label = f"{ingredient} — {desc}"
+                    key = f"{category}_{ingredient}_{desc}"
+                    if st.button(f"{desc}", key=key):
+                        st.session_state.selected_ingredients.add(label)   
 
 
 
