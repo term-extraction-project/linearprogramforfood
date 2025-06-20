@@ -23,7 +23,48 @@ if "selected_ingredients" not in st.session_state:
 
 st.title("🍲 Выбор ингредиентов")
 
-# --- Раскрывающийся выбор: категория > ингредиент > описание ---
+# --- Пример CSS для стилизации ---
+st.markdown("""
+    <style>
+    /* Убираем отступы между блоками */
+    .block-container {
+        padding-top: 0rem;
+        padding-bottom: 0rem;
+    }
+    /* Категория: яркий фон */
+    div[data-testid="stExpander"] > div:first-child {
+        background-color: #007BFF;  /* Ярко-синий */
+        color: white;
+        border-radius: 6px;
+        margin-bottom: 0px;
+    }
+    /* Ингредиенты: серый фон */
+    div[data-testid="stExpander"] > div:nth-child(2) > div > div > div[data-testid="stExpander"] > div:first-child {
+        background-color: #CCCCCC;  /* Светло-серый */
+        color: black;
+    }
+    /* Кнопки описаний: белые, прямоугольные */
+    button[kind="secondary"] {
+        background-color: white !important;
+        color: black !important;
+        border-radius: 0px !important;
+        border: 1px solid #ccc !important;
+        margin: 2px 0px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# --- Пример данных ---
+df_ingr_all = pd.DataFrame({
+    "Категория": ["Мясо", "Мясо", "Овощи"],
+    "Ингредиент": ["Курица", "Говядина", "Морковь"],
+    "Описание": ["Филе", "Печень", "Нарезанная"]
+})
+
+# --- Логика выбора ---
+if "selected_ingredients" not in st.session_state:
+    st.session_state.selected_ingredients = set()
+
 for category in df_ingr_all['Категория'].dropna().unique():
     with st.expander(f"{category}"):
         df_cat = df_ingr_all[df_ingr_all['Категория'] == category]
