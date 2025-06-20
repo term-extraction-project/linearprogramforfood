@@ -4,6 +4,8 @@ from scipy.optimize import linprog  # ← ОБЯЗАТЕЛЬНО
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
+import textwrap
+
 
 
 # --- Загрузка данных ---
@@ -162,6 +164,7 @@ if ingredient_names:
                 for nutr in cols_to_divide:
                     st.write(f"**{nutr}:** {round(totals[nutr], 2)} г")
 
+                               
                 # --- График 1: Состав ингредиентов ---
                 fig1, ax1 = plt.subplots(figsize=(10, 6))
                 
@@ -171,18 +174,20 @@ if ingredient_names:
                 lower_errors = [val - low for val, (low, high) in zip(ingr_vals, ingr_lims)]
                 upper_errors = [high - val for val, (low, high) in zip(ingr_vals, ingr_lims)]
                 
-                ax1.errorbar(ingredient_names, ingr_vals, yerr=[lower_errors, upper_errors],
-                             fmt='o', capsize=5, color='blue', ecolor='gray', elinewidth=2)
+                wrapped_ingredients = ['\n'.join(textwrap.wrap(label, 10)) for label in ingredient_names]
                 
-                ax1.set_ylabel("Граммы")
+                ax1.errorbar(wrapped_ingredients, ingr_vals, yerr=[lower_errors, upper_errors],
+                             fmt='o', capsize=5, color='#FF4B4B', ecolor='#CCCED1', elinewidth=2)
+                ax1.set_ylabel("Значение")
                 ax1.set_title("Ингредиенты: значения и ограничения")
-                ax1.grid(True, linestyle='--', alpha=0.5)
-                plt.xticks(rotation=45)
-                plt.tight_layout()
+                ax1.set_ylim(0, 100)
+                ax1.grid(True, axis='y', linestyle='-', color='#e6e6e6', alpha=0.7)
+                ax1.tick_params(axis='x', rotation=0)
+                ax1.spines['top'].set_color('white')
+                ax1.spines['right'].set_visible(False)
                 
                 st.pyplot(fig1)
-
-
+                
                 # --- График 2: Питательные вещества ---
                 fig2, ax2 = plt.subplots(figsize=(10, 6))
                 
@@ -191,20 +196,22 @@ if ingredient_names:
                 nutr_lims = [nutr_ranges[n] for n in nutrients]
                 
                 for i, (nutrient, val, (low, high)) in enumerate(zip(nutrients, nutr_vals, nutr_lims)):
-                    # Линия диапазона
-                    ax2.plot([i, i], [low, high], color='gray', linewidth=4, alpha=0.5)
-                    # Значение
-                    ax2.plot(i, val, 'o', color='blue')
+                    ax2.plot([i, i], [low, high], color='#CCCED1', linewidth=4, alpha=0.5)
+                    ax2.plot(i, val, 'o', color='#FF4B4B')
                 
                 ax2.set_xticks(range(len(nutrients)))
-                ax2.set_xticklabels(nutrients, rotation=45)
+                ax2.set_xticklabels(nutrients, rotation=0)
                 ax2.set_ylabel("Граммы")
                 ax2.set_title("Питательные вещества: значения и допустимые границы")
-                ax2.grid(True, linestyle='--', alpha=0.5)
-                plt.tight_layout()
+                ax2.set_ylim(0, 100)
+                ax2.grid(True, axis='y', linestyle='-', color='#e6e6e6', alpha=0.7)
+                ax2.spines['top'].set_color('white')
+                ax2.spines['right'].set_visible(False)
                 
                 st.pyplot(fig2)
+             
 
+            
            
             
             else:
