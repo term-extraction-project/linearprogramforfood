@@ -54,13 +54,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- Пример данных ---
-df_ingr_all = pd.DataFrame({
-    "Категория": ["Мясо", "Мясо", "Овощи"],
-    "Ингредиент": ["Курица", "Говядина", "Морковь"],
-    "Описание": ["Филе", "Печень", "Нарезанная"]
-})
-
 # --- Логика выбора ---
 if "selected_ingredients" not in st.session_state:
     st.session_state.selected_ingredients = set()
